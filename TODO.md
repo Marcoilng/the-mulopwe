@@ -14,5 +14,9 @@
 
 ## Interactions et qualité de finition
 - [x] Les éléments importants apparaissent avec des animations déclenchées au défilement et des états de survol raffinés.
+- [x] La hero utilise une image template locale d’un développeur vu de dos face à ses écrans, sans modifier la palette existante.
+- [x] Les réseaux sociaux affichent des icônes SVG professionnelles, accessibles et cohérentes avec la direction visuelle.
+- [x] Les motions GSAP ajoutent profondeur, parallaxe, marquee et révélation progressive aux sections clés.
+- [x] Les textes de présentation, de confiance, de projets et de contact sont enrichis pour clarifier la proposition de valeur.
 - [x] La mise en page reste lisible et élégante sur mobile et desktop, sans dépendre d’un backend.
 - [x] Le code est organisé dans un repository dédié et prêt à recevoir une personnalisation ultérieure.

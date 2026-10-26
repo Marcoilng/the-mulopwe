@@ -1,13 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import './styles.css';
 
 const socialLinks = [
-  { label: 'Facebook', short: 'fb', href: 'https://www.facebook.com/share/18FAFpe9va/?mibextid=wwXIfr' },
-  { label: 'Instagram', short: '◎', href: 'https://www.instagram.com/marco_ilunga700?stkn=MTRxZTlrbjdwOWp5aA%3D%3D&utm_source=qr' },
-  { label: 'Email', short: '@', href: 'mailto:ilungamarco1000@gmail.com' },
-  { label: 'WhatsApp', short: 'wa', href: 'tel:+27655445876' },
+  { label: 'Facebook', icon: 'facebook', href: 'https://www.facebook.com/share/18FAFpe9va/?mibextid=wwXIfr' },
+  { label: 'Instagram', icon: 'instagram', href: 'https://www.instagram.com/marco_ilunga700?stkn=MTRxZTlrbjdwOWp5aA%3D%3D&utm_source=qr' },
+  { label: 'Email', icon: 'mail', href: 'mailto:ilungamarco1000@gmail.com' },
+  { label: 'WhatsApp', icon: 'whatsapp', href: 'tel:+27655445876' },
 ];
+
+gsap.registerPlugin(ScrollTrigger);
 
 const projects = [
   {
@@ -164,6 +168,13 @@ function Wordmark({ inverse = false }) {
   );
 }
 
+function SocialIcon({ type }) {
+  if (type === 'mail') return <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m4 7 8 6 8-6" /></svg>;
+  if (type === 'instagram') return <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" className="social-icon__fill" /></svg>;
+  if (type === 'whatsapp') return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.5-4A8 8 0 1 1 20 11.5Z" /><path d="M9 8.5c.3-.4.7-.4 1-.1l1 1c.2.2.2.6 0 .9l-.5.6c.5 1 1.2 1.7 2.2 2.2l.6-.5c.3-.2.7-.2.9 0l1 1c.3.3.3.7-.1 1-.6.6-1.4.7-2.2.4-2.6-.9-4.5-2.8-5.4-5.4-.3-.8-.2-1.6.4-2.1Z" className="social-icon__fill" /></svg>;
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.2 8.2V6.8c0-.7.5-1.1 1.2-1.1h1.5V3h-2.4c-2.8 0-4.4 1.7-4.4 4.5v.7H7.7v3h2.4V21h3.8v-9.8h2.5l.4-3Z" className="social-icon__fill" /></svg>;
+}
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [projectIndex, setProjectIndex] = useState(0);
@@ -183,10 +194,17 @@ function App() {
       });
     }, { threshold: 0.12 });
     document.querySelectorAll('.reveal').forEach((element) => revealObserver.observe(element));
+    const context = gsap.context(() => {
+      gsap.fromTo('.hero__portrait-wrap', { y: 28, rotate: 1.5 }, { y: -18, rotate: -1.5, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1.2 } });
+      gsap.to('.hero__giant-word', { xPercent: -10, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: 1 } });
+      gsap.utils.toArray('.manifesto__marquee').forEach((item) => gsap.to(item, { xPercent: -22, ease: 'none', scrollTrigger: { trigger: item, start: 'top bottom', end: 'bottom top', scrub: 1.4 } }));
+      gsap.utils.toArray('.project-showcase__image').forEach((item) => gsap.fromTo(item, { clipPath: 'inset(0 12% 0 0)' }, { clipPath: 'inset(0 0% 0 0)', ease: 'power2.out', duration: 1.2, scrollTrigger: { trigger: item, start: 'top 82%' } }));
+    }, heroRef);
     return () => {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('pointermove', onPointer);
       revealObserver.disconnect();
+      context.revert();
     };
   }, []);
 
@@ -209,7 +227,7 @@ function App() {
         </nav>
         <div className="header-tools">
           <div className="socials">
-            {socialLinks.map((social) => <a key={social.label} href={social.href} aria-label={social.label}>{social.short}</a>)}
+            {socialLinks.map((social) => <a key={social.label} href={social.href} aria-label={social.label} target={social.label === 'Email' ? undefined : '_blank'} rel="noopener noreferrer"><SocialIcon type={social.icon} /></a>)}
           </div>
           <button className={`menu-toggle ${menuOpen ? 'menu-toggle--open' : ''}`} onClick={() => setMenuOpen(!menuOpen)} aria-label="Ouvrir le menu" aria-expanded={menuOpen}>
             <span /><span /><span />
@@ -236,8 +254,8 @@ function App() {
           </div>
           <div className="hero__portrait-wrap reveal">
             <div className="hero__portrait-glow" />
-            <div className="hero__portrait" role="img" aria-label="Portrait professionnel de Marco Ilunga" />
-            <div className="hero__portrait-label">Portrait<br /><span>01 — 03</span></div>
+            <div className="hero__portrait" role="img" aria-label="Développeur vu de dos face à ses écrans" />
+            <div className="hero__portrait-label">Build mode<br /><span>01 — 03</span></div>
           </div>
           <div className="hero__title reveal">
             <span className="hero__title-small">Construire avec intention</span>
@@ -246,7 +264,7 @@ function App() {
           <div className="hero__side-note reveal"><span className="side-note-line" />Je transforme le code<br />en expériences utiles.</div>
           <div className="hero__bottom reveal">
             <a className="circle-arrow" href="#about" aria-label="Découvrir le portfolio"><span>↓</span></a>
-            <span className="hero__bottom-copy">Scroll to explore</span>
+            <span className="hero__bottom-copy">Défiler pour explorer</span>
             <span className="hero__bottom-index">01 <i>/</i> 05</span>
           </div>
           <div className="hero__giant-word" aria-hidden="true">MARCO</div>
@@ -257,8 +275,8 @@ function App() {
           <div className="intro__grid">
             <h2 className="display display--intro reveal">Un esprit clair<br />dans le système<span className="blue-dot">.</span></h2>
             <div className="intro__copy reveal">
-              <p className="lead">Je suis Marco Ilunga, développeur et créateur digital. Je conçois des expériences web rapides, lisibles et mémorables pour transformer une intention en produit.</p>
-              <p>À la croisée du design, du code et de la stratégie, je construis des interfaces qui restent simples à utiliser et solides dans le temps.</p>
+              <p className="lead">Je suis Marco Ilunga, développeur et créateur digital. Je transforme les idées ambitieuses en expériences web rapides, lisibles et mémorables.</p>
+              <p>De la première conversation au dernier pixel, je relie design, code et stratégie pour créer des interfaces qui donnent confiance, facilitent l’action et restent solides dans le temps.</p>
               <a className="text-link" href="#contact">En savoir plus <Arrow /></a>
             </div>
           </div>
@@ -276,7 +294,7 @@ function App() {
 
         <section className="trust section-pad">
           <div className="section-label reveal"><span>03</span><span className="section-label__line" /><span>Ils me font confiance</span></div>
-          <div className="trust__heading reveal"><h2 className="display">Des systèmes<br /><span>en mouvement</span><span className="blue-dot">.</span></h2><p>Des projets qui commencent par une question claire et deviennent des outils utilisés au quotidien.</p></div>
+          <div className="trust__heading reveal"><h2 className="display">Des systèmes<br /><span>en mouvement</span><span className="blue-dot">.</span></h2><p>Des projets qui commencent par une question claire et deviennent des outils utiles, désirables et utilisés au quotidien.</p></div>
           <div className="logo-wall reveal" aria-label="Clients et partenaires">
             <span className="logo-word logo-word--serif">atelier</span><span className="logo-word logo-word--caps">NOMA</span><span className="logo-word logo-word--script">mosaïque</span><span className="logo-word logo-word--mono">KORA®</span><span className="logo-word logo-word--heavy">YANGO</span><span className="logo-word logo-word--outline">common<br />ground</span>
           </div>
@@ -284,7 +302,7 @@ function App() {
 
         <section className="projects section-pad" id="projects">
           <div className="section-label reveal"><span>04</span><span className="section-label__line" /><span>Projets sélectionnés</span></div>
-          <div className="projects__heading reveal"><h2 className="display">Des idées<br /><i>en produits</i><span className="blue-dot">.</span></h2><p>Un aperçu des expériences web, interfaces et systèmes qui ont rythmé les dernières années.</p></div>
+          <div className="projects__heading reveal"><h2 className="display">Des idées<br /><i>en produits</i><span className="blue-dot">.</span></h2><p>Un aperçu de projets conçus pour clarifier un parcours, accélérer un usage et laisser une impression durable.</p></div>
           <div className="project-showcase reveal">
             <div className="project-showcase__image" style={{ backgroundImage: `url(${project.image})` }}>
               <div className="project-showcase__overlay" />
@@ -306,7 +324,7 @@ function App() {
           <div className="contact__giant">PARLONS<span className="blue-dot">.</span></div>
           <div className="section-pad contact__inner">
             <div className="section-label section-label--light reveal"><span>05</span><span className="section-label__line" /><span>La suite</span></div>
-            <div className="contact__grid reveal"><h2 className="display display--light">Un projet<br /><i>en tête ?</i></h2><div><p>Les bons produits commencent par une conversation claire. Parlons de ce que tu veux construire, améliorer ou rendre plus simple.</p><a className="button button--light" href="mailto:ilungamarco1000@gmail.com">ilungamarco1000@gmail.com <Arrow /></a></div></div>
+            <div className="contact__grid reveal"><h2 className="display display--light">Un projet<br /><i>en tête ?</i></h2><div><p>Les bons produits commencent par une conversation claire. Partage ton contexte, tes enjeux ou même une idée encore floue : nous lui donnerons une direction concrète.</p><a className="button button--light" href="mailto:ilungamarco1000@gmail.com">Démarrer une conversation <Arrow /></a></div></div>
             <div className="contact__footer reveal"><Wordmark inverse /><div className="contact__footer-links"><span>Kinshasa · Paris</span><span>Facebook · Instagram · Email · WhatsApp</span><span>© 2026 Marco Ilunga</span></div></div>
           </div>
         </section>
