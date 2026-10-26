@@ -7,16 +7,17 @@ settings:
 importers:
 
   .:
-    devDependencies:
-      '@vitejs/plugin-react':
-        specifier: latest
-        version: 6.1.2(vite@8.3.5)
+    dependencies:
       react:
         specifier: latest
         version: 19.3.1
       react-dom:
         specifier: latest
         version: 19.3.1(react@19.3.1)
+    devDependencies:
+      '@vitejs/plugin-react':
+        specifier: latest
+        version: 6.1.2(vite@8.3.5)
       vite:
         specifier: latest
         version: 8.3.5
